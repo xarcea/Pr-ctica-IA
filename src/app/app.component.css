@@ -1,0 +1,44 @@
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+app-tabla {
+    margin-right: 30px;
+}
+
+.botones {
+    display:grid;
+}
+
+app-mesnaje {
+    display: flex;
+    top: 0;
+    right: 0;
+}
+
+.div {
+    display: flex;
+    /* justify-content:flex-end; */
+    /* top: -18px; */
+    position: relative;
+    top: 20px;
+    left: 12px;
+}
+
+app-mensaje {
+    opacity: 1;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+app-mensaje.hidden {
+    opacity: 0;
+    transform: translateY(-20px);
+}
+
+.juego {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+}

@@ -1,0 +1,16 @@
+<div class="container">
+    <app-tabla></app-tabla>
+    <div class="botones">
+        <app-boton [texto]="'Establecer punto de inicio'"></app-boton>
+        <app-boton [texto]="'Establecer punto de fin'"></app-boton>
+        <app-boton [texto]="'Cambiar valor de celda'"></app-boton>
+        <app-boton [texto]="'Preguntar por el tipo de terreno'"></app-boton>
+        <div class="juego">
+            <app-boton-sin-input [texto]="'Control por usuario'"></app-boton-sin-input>
+            <app-boton-sin-input [texto]="'Control automático'"></app-boton-sin-input>
+        </div>
+        <div class="div">
+            <app-mensaje [mensaje]="mensaje" [class.hidden]="mensaje == ''"></app-mensaje>
+        </div>
+    </div>
+</div>
