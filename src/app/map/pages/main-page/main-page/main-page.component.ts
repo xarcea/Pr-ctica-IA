@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
-import { SharedStringService } from './map/services/shared-string/shared-string.service';
 import { Subscription } from 'rxjs';
-import { ComunicacionService } from './map/services/comunication/comunicacion.service';
+import { ComunicacionService } from 'src/app/map/services/comunication/comunicacion.service';
+import { SharedStringService } from 'src/app/map/services/shared-string/shared-string.service';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css'],
+  selector: 'app-main-page',
+  templateUrl: './main-page.component.html',
+  styleUrls: ['./main-page.component.css'],
 })
-export class AppComponent {
+export class MainPageComponent {
   title = 'laberinto';
   mostrar = false;
   mensajeManual = '';

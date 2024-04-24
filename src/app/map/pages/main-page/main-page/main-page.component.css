@@ -1,0 +1,65 @@
+.container {
+  display: flex;
+  justify-content: center;
+  font-family: "Segoe UI";
+  padding-top: 30px;
+}
+
+app-tabla {
+  margin-right: 30px;
+}
+
+.botones {
+  display: grid;
+  height: fit-content;
+  padding-top: 20px;
+  min-width: fit-content;
+}
+
+.radio {
+  display: grid;
+  margin-bottom: 20px;
+}
+
+.div-pasos-agente {
+  display: flex;
+  position: relative;
+  top: -16.5px;
+  left: 201.5px;
+}
+
+.div-terreno {
+  display: flex;
+  position: relative;
+  top: -17px;
+  left: 286.5px;
+}
+
+.div-pasos-manual {
+  display: flex;
+  position: relative;
+  top: 7px;
+  left: 13px;
+}
+
+app-mensaje {
+  display: flex;
+  position: absolute;
+  opacity: 1;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+app-mensaje.hidden {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+.juego {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+}
+
+.boton-iniciar {
+  margin-bottom: 30px;
+}

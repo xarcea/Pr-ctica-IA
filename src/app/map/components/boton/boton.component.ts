@@ -1,15 +1,15 @@
 import { Component, Input } from '@angular/core';
-import { TablaService } from '../tabla.service';
+import { TablaService } from '../../services/table/tabla.service';
 
 @Component({
   selector: 'app-boton',
   templateUrl: './boton.component.html',
-  styleUrls: ['./boton.component.css']
+  styleUrls: ['./boton.component.css'],
 })
 export class BotonComponent {
   @Input() texto: string = 'Predeterminado';
 
-  constructor(private tablaService: TablaService) { }
+  constructor(private tablaService: TablaService) {}
 
   onClick(coordenadas: string) {
     switch (this.texto) {
