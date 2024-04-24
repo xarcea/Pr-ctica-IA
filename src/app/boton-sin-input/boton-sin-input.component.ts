@@ -12,6 +12,11 @@ export class BotonSinInputComponent {
   constructor(private comunicacionService: ComunicacionService) {}
 
   clicEnBoton() {
-    this.comunicacionService.clicEnBoton();
+    if(this.texto==='Control por usuario')
+      this.comunicacionService.clicEnBoton();
+    if(this.texto==='Control automático')
+      this.comunicacionService.clicEnBotonAgente();
+    if(this.texto==='Iniciar')
+      this.comunicacionService.clicEnBotonIniciar();
   }
 }

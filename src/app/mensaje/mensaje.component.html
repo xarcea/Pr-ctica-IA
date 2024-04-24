@@ -1,3 +1,5 @@
 <div class="selector">
-    <span>{{ mensaje }}</span>
+    <span *ngIf="mensajeTerreno != ''">{{ mensajeTerreno }}</span>
+    <span *ngIf="mensajeAgente != ''">{{ mensajeAgente }}</span>
+    <span *ngIf="mensajeManual != ''">{{ mensajeManual }}</span>
 </div>

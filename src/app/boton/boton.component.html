@@ -1,4 +1,4 @@
 <button mat-raised-button (click)="onClick(coordenadasInput.value)">{{ texto }}</button>
 <mat-form-field class="mat-form-field-width">
-    <input matInput autocomplete="off" #coordenadasInput>
+    <input matInput autocomplete="off" #coordenadasInput [placeholder]="mostrarPlaceholder() ? '[A,B,D,I]' : ''">
 </mat-form-field>

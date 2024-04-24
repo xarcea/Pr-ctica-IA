@@ -9,6 +9,9 @@ import { MaterialModule } from './material.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MensajeComponent } from './mensaje/mensaje.component';
 import { BotonSinInputComponent } from './boton-sin-input/boton-sin-input.component';
+import { TreeComponent } from './tree/tree.component';
+import { TreeNodeComponent } from './tree-node/tree-node.component';
+import { TreeVisualizationComponent } from './tree-visualization/tree-visualization.component';
 
 @NgModule({
   declarations: [
@@ -16,7 +19,10 @@ import { BotonSinInputComponent } from './boton-sin-input/boton-sin-input.compon
     TablaComponent,
     BotonComponent,
     MensajeComponent,
-    BotonSinInputComponent
+    BotonSinInputComponent,
+    TreeComponent,
+    TreeNodeComponent,
+    TreeVisualizationComponent
   ],
   imports: [
     BrowserModule,

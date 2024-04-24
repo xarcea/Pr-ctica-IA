@@ -6,5 +6,7 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['./mensaje.component.css']
 })
 export class MensajeComponent {
-  @Input() mensaje: string = '';
+  @Input() mensajeTerreno: string = '';
+  @Input() mensajeAgente: string = '';
+  @Input() mensajeManual: string = '';
 }

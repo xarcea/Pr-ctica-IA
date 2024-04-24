@@ -25,7 +25,14 @@ export class BotonComponent {
       case 'Preguntar por el tipo de terreno':
         coordenadas += ',cuarto';
         break;
+      case 'Establecer prioridad':
+        coordenadas += ',quinto';
+        break;
     }
     this.tablaService.actualizarTabla(coordenadas);
+  }
+
+  mostrarPlaceholder(): boolean {
+    return this.texto === 'Establecer prioridad';
   }
 }

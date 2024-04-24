@@ -1,0 +1,17 @@
+<div>
+    <h2>Árbol de coordenadas</h2>
+    <ul>
+        <ng-container *ngFor="let node of tree">
+        <li>
+            {{ node.coordenada.x }}, {{ node.coordenada.y }}
+            ({{ node.marcado ? 'Especial' : 'Normal' }})
+            <ul *ngIf="node.hijo && node.hijo.length > 0">
+            <ng-container *ngFor="let child of node.hijo">
+                <app-tree-node [node]="child"></app-tree-node>
+            </ng-container>
+            </ul>
+        </li>
+        </ng-container>
+    </ul>
+</div>
+<!-- <app-tree-visualization [treeData]="tree"></app-tree-visualization> -->

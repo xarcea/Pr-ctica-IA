@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { TablaService } from '../tabla.service';
 import { SharedStringService } from '../shared-string.service';
 import { ComunicacionService } from '../comunicacion.service';
-import { Observable, interval, map } from 'rxjs';
+import { ArbolService } from '../arbol.service';
 
 
 @Component({
@@ -24,11 +24,18 @@ export class TablaComponent {
   opcionesDisponibles = 0;
   numeroPasos: number = 0;
   visited: boolean[][] = Array.from({ length: 15 }, (_) => Array.from({ length: 15 }, (_) => false));
+  prioridad: any = [];
+  opciones: any = [];
+  pila: any[] = [];
+  recorrido: any[] = [];
   
   constructor(private http: HttpClient, private tablaService: TablaService, private stringService: SharedStringService,
-    private comunicacionService: ComunicacionService) { 
+    private comunicacionService: ComunicacionService, private arbolService: ArbolService) { 
       this.comunicacionService.botonClic$.subscribe(() => {
         this.iniciarJuegoManual();
+      });
+      this.comunicacionService.botonClicIniciar$.subscribe(() => {
+        this.iniciarJuegoAutomático();
       });
     }
 
@@ -71,10 +78,18 @@ export class TablaComponent {
             terreno = 'Wall';
           else
             terreno = 'Road';
-            this.stringService.setSharedString(terreno);
+            this.stringService.setSharedStringTerreno(terreno);
             setTimeout(() => {
-              this.stringService.setSharedString('');
+              this.stringService.setSharedStringTerreno('');
             }, 3000);
+          break;
+        case 'quinto':
+          const letrasRegex = /\[([^\]]*)\]/;
+          const match = coordenadas.match(letrasRegex);
+          if (match && match[1]) {
+            const letrasArray = match[1].split(',');
+            this.prioridad = letrasArray;
+          }
           break;
       }
     });
@@ -136,10 +151,17 @@ export class TablaComponent {
 
       let cellValue = this.letras[this.filaActual][this.columnaActual];
       cellValue = cellValue.replace(/,?X,?/g, '');
-      let nuevaLetra = cellValue === 'V' || cellValue === '' ? 'V' : cellValue + ',V';
+      let nuevaLetra = cellValue;
+      if(!cellValue.includes('V'))
+        nuevaLetra = cellValue === 'V' || cellValue === '' ? 'V' : cellValue + ',V';
 
-      if(this.opcionesDisponibles > 1){
-        nuevaLetra += ',O';
+      if (this.opcionesDisponibles > 1) {
+        const coordenadas = { x: this.filaActual, y: this.columnaActual };
+        if(!this.pila.some(item => item.x === coordenadas.x && item.y === coordenadas.y)){
+          this.pila.push(coordenadas);
+        }
+        if(!cellValue.includes('O'))
+          nuevaLetra += ',O';
       }
       
       this.letras[this.filaActual][this.columnaActual] = nuevaLetra;
@@ -147,11 +169,13 @@ export class TablaComponent {
       if(this.letras[this.filaActual][this.columnaActual] == 'F'){
         this.flag = false;
         this.letras[this.filaActual][this.columnaActual] += ',X';
-        this.stringService.setSharedString('Número de pasos: ' + this.numeroPasos);
+        this.stringService.setSharedStringManual('Número de pasos: ' + this.numeroPasos);
+        this.stringService.setSharedStringAgente('Número de pasos: ' + this.numeroPasos);
       }
       else
         this.letras[this.filaActual][this.columnaActual] = 'X';
       this.actualizarVista();
+      this.agregarRecorrido();
     }
   }
 
@@ -165,10 +189,17 @@ export class TablaComponent {
 
       let cellValue = this.letras[this.filaActual][this.columnaActual];
       cellValue = cellValue.replace(/,?X,?/g, '');
-      let nuevaLetra = cellValue === 'V' || cellValue === '' ? 'V' : cellValue + ',V';
+      let nuevaLetra = cellValue;
+      if(!cellValue.includes('V'))
+        nuevaLetra = cellValue === 'V' || cellValue === '' ? 'V' : cellValue + ',V';
 
-      if(this.opcionesDisponibles > 1){
-        nuevaLetra += ',O';
+      if (this.opcionesDisponibles > 1) {
+        const coordenadas = { x: this.filaActual, y: this.columnaActual };
+        if(!this.pila.some(item => item.x === coordenadas.x && item.y === coordenadas.y)){
+          this.pila.push(coordenadas);
+        }
+        if(!cellValue.includes('O'))
+          nuevaLetra += ',O';
       }
       
       this.letras[this.filaActual][this.columnaActual] = nuevaLetra;
@@ -176,11 +207,13 @@ export class TablaComponent {
       if(this.letras[this.filaActual][this.columnaActual] == 'F'){
         this.flag = false;
         this.letras[this.filaActual][this.columnaActual] += ',X';
-        this.stringService.setSharedString('Número de pasos: ' + this.numeroPasos);
+        this.stringService.setSharedStringManual('Número de pasos: ' + this.numeroPasos);
+        this.stringService.setSharedStringAgente('Número de pasos: ' + this.numeroPasos);
       }
       else
         this.letras[this.filaActual][this.columnaActual] = 'X';
       this.actualizarVista();
+      this.agregarRecorrido();
     }
   }
 
@@ -194,10 +227,17 @@ export class TablaComponent {
 
       let cellValue = this.letras[this.filaActual][this.columnaActual];
       cellValue = cellValue.replace(/,?X,?/g, '');
-      let nuevaLetra = cellValue === 'V' || cellValue === '' ? 'V' : cellValue + ',V';
+      let nuevaLetra = cellValue;
+      if(!cellValue.includes('V'))
+        nuevaLetra = cellValue === 'V' || cellValue === '' ? 'V' : cellValue + ',V';
 
-      if(this.opcionesDisponibles > 1){
-        nuevaLetra += ',O';
+      if (this.opcionesDisponibles > 1) {
+        const coordenadas = { x: this.filaActual, y: this.columnaActual };
+        if(!this.pila.some(item => item.x === coordenadas.x && item.y === coordenadas.y)){
+          this.pila.push(coordenadas);
+        }
+        if(!cellValue.includes('O'))
+          nuevaLetra += ',O';
       }
       
       this.letras[this.filaActual][this.columnaActual] = nuevaLetra;
@@ -205,11 +245,13 @@ export class TablaComponent {
       if(this.letras[this.filaActual][this.columnaActual] == 'F'){
         this.flag = false;
         this.letras[this.filaActual][this.columnaActual] += ',X';
-        this.stringService.setSharedString('Número de pasos: ' + this.numeroPasos);
+        this.stringService.setSharedStringManual('Número de pasos: ' + this.numeroPasos);
+        this.stringService.setSharedStringAgente('Número de pasos: ' + this.numeroPasos);
       }
       else
         this.letras[this.filaActual][this.columnaActual] = 'X';
       this.actualizarVista();
+      this.agregarRecorrido();
     }
   }
 
@@ -223,10 +265,17 @@ export class TablaComponent {
 
       let cellValue = this.letras[this.filaActual][this.columnaActual];
       cellValue = cellValue.replace(/,?X,?/g, '');
-      let nuevaLetra = cellValue === 'V' || cellValue === '' ? 'V' : cellValue + ',V';
+      let nuevaLetra = cellValue;
+      if(!cellValue.includes('V'))
+        nuevaLetra = cellValue === 'V' || cellValue === '' ? 'V' : cellValue + ',V';
 
-      if(this.opcionesDisponibles > 1){
-        nuevaLetra += ',O';
+      if (this.opcionesDisponibles > 1) {
+        const coordenadas = { x: this.filaActual, y: this.columnaActual };
+        if(!this.pila.some(item => item.x === coordenadas.x && item.y === coordenadas.y)){
+          this.pila.push(coordenadas);
+        }
+        if(!cellValue.includes('O'))
+          nuevaLetra += ',O';
       }
       
       this.letras[this.filaActual][this.columnaActual] = nuevaLetra;
@@ -234,33 +283,43 @@ export class TablaComponent {
       if(this.letras[this.filaActual][this.columnaActual] == 'F'){
         this.flag = false;
         this.letras[this.filaActual][this.columnaActual] += ',X';
-        this.stringService.setSharedString('Número de pasos: ' + this.numeroPasos);
+        this.stringService.setSharedStringManual('Número de pasos: ' + this.numeroPasos);
+        this.stringService.setSharedStringAgente('Número de pasos: ' + this.numeroPasos);
       }
       else
         this.letras[this.filaActual][this.columnaActual] = 'X';
       this.actualizarVista();
+      this.agregarRecorrido();
     }
   }
 
   coprobarOpcionesDisponibles() {
     this.opcionesDisponibles = 0;
+    this.opciones = [];
 
-    if (this.filaActual > 0 && this.data[this.filaActual - 1][this.columnaActual] !== 0 
-      && !this.letras[this.filaActual - 1][this.columnaActual].includes('V')) {
-      this.opcionesDisponibles++;
+    if (this.filaActual > 0 && this.data[this.filaActual - 1][this.columnaActual] !== 0 ){
+      if(!this.letras[this.filaActual - 1][this.columnaActual].includes('V')) {
+        this.opcionesDisponibles++;
+        this.opciones.push('A');
+      }
     }
-
-    if (this.filaActual < this.data.length - 1 && this.data[this.filaActual + 1][this.columnaActual] !== 0 
-      && !this.letras[this.filaActual + 1][this.columnaActual].includes('V')) {
-      this.opcionesDisponibles++;
+    if (this.filaActual < this.data.length - 1 && this.data[this.filaActual + 1][this.columnaActual] !== 0){
+      if(!this.letras[this.filaActual + 1][this.columnaActual].includes('V')) {
+        this.opcionesDisponibles++;
+        this.opciones.push('B');
+      }
     }
-    if (this.columnaActual > 0 && this.data[this.filaActual][this.columnaActual - 1] !== 0 
-      && !this.letras[this.filaActual][this.columnaActual - 1].includes('V')) {
-      this.opcionesDisponibles++;
+    if (this.columnaActual > 0 && this.data[this.filaActual][this.columnaActual - 1] !== 0){
+      if(!this.letras[this.filaActual][this.columnaActual - 1].includes('V')) {
+        this.opcionesDisponibles++;
+        this.opciones.push('I');
+      }
     }
-    if (this.columnaActual < this.data[0].length - 1 && this.data[this.filaActual][this.columnaActual + 1] !== 0 
-      && !this.letras[this.filaActual][this.columnaActual + 1].includes('V')) {
-      this.opcionesDisponibles++;
+    if (this.columnaActual < this.data[0].length - 1 && this.data[this.filaActual][this.columnaActual + 1] !== 0){
+      if(!this.letras[this.filaActual][this.columnaActual + 1].includes('V')) {
+        this.opcionesDisponibles++;
+        this.opciones.push('D');
+      }
     }
   }
 
@@ -278,5 +337,90 @@ export class TablaComponent {
 
     if(this.columnaActual < 14)
       this.visited[this.filaActual][this.columnaActual + 1] = true;
+  }
+
+  iniciarJuegoAutomático() {
+    this.letras.forEach((row, i) => {
+      row.forEach((cell, j) => {
+        if (cell === 'I') {
+          this.filaActual = i;
+          this.columnaActual = j;
+        }
+      });
+    });
+
+    this.letras[this.filaActual][this.columnaActual] += ',X';
+    this.flag = true;
+    this.numeroPasos = 0;
+    this.actualizarVista();
+
+    this.agregarRecorrido();
+
+    this.avanzar();
+
+    console.log(this.recorrido);
+  }
+
+  async avanzar() {
+    while(this.flag){
+      this.coprobarOpcionesDisponibles();
+      if(this.opcionesDisponibles==0){
+
+        let cellValue = this.letras[this.filaActual][this.columnaActual];
+        cellValue = cellValue.replace(/,?X,?/g, '');
+        if(!cellValue.includes('V')){
+          let nuevaLetra = cellValue === 'V' || cellValue === '' ? 'V' : cellValue + ',V';
+          this.letras[this.filaActual][this.columnaActual] = nuevaLetra;
+        }
+
+        this.filaActual = this.pila[this.pila.length-1].x;
+        this.columnaActual = this.pila[this.pila.length-1].y;
+        this.letras[this.filaActual][this.columnaActual] += ',X';
+
+        this.coprobarOpcionesDisponibles();
+        if(this.opcionesDisponibles == 0){
+          let cellValue = this.letras[this.filaActual][this.columnaActual];
+          this.letras[this.filaActual][this.columnaActual] = cellValue.replace(/,?X,?/g, '');
+
+          this.pila.pop();
+        }
+        this.agregarRecorrido();
+        this.avanzar();
+      } else {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        for(let i = 0; i < this.prioridad.length; i++){
+          if(this.opciones.includes(this.prioridad[i])){
+            if(this.prioridad[i] === 'A'){
+              this.moverArriba();
+              break;
+            } else if(this.prioridad[i] === 'B'){
+              this.moverAbajo();
+              break;
+            } else if(this.prioridad[i] === 'I'){
+              this.moverIzquierda();
+              break;
+            } else if(this.prioridad[i] === 'D'){
+              this.moverDerecha();
+              break;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  agregarRecorrido() {
+    const columna = String.fromCharCode(this.columnaActual + 65);
+    const fila = this.filaActual + 1;
+    let cellValue = this.letras[this.filaActual][this.columnaActual];
+    let coordenadas;
+    this.coprobarOpcionesDisponibles();
+    if(this.opcionesDisponibles > 1 || this.opcionesDisponibles == 0 || cellValue.includes('O')
+      || cellValue.includes('I') || cellValue.includes('F'))
+      coordenadas = { x: fila, y: columna, z: 1 };
+    else
+      coordenadas = { x: fila, y: columna, z: 0 };
+    this.recorrido.push(coordenadas);
+    this.arbolService.setCoordinatesArray(this.recorrido);
   }
 }

@@ -1,7 +1,8 @@
 .container {
     display: flex;
-    align-items: center;
     justify-content: center;
+    font-family: 'Segoe UI';
+    padding-top: 30px;
 }
 
 app-tabla {
@@ -10,24 +11,40 @@ app-tabla {
 
 .botones {
     display:grid;
+    height: fit-content;
+    padding-top: 20px;
+    min-width: fit-content;
 }
 
-app-mesnaje {
-    display: flex;
-    top: 0;
-    right: 0;
+.radio {
+    display:grid;
+    margin-bottom: 20px;
 }
 
-.div {
+.div-pasos-agente {
     display: flex;
-    /* justify-content:flex-end; */
-    /* top: -18px; */
     position: relative;
-    top: 20px;
-    left: 12px;
+    top: -16.5px;
+    left: 201.5px;
+}
+
+.div-terreno {
+    display: flex;
+    position: relative;
+    top: -17px;
+    left: 286.5px;
+}
+
+.div-pasos-manual {
+    display: flex;
+    position: relative;
+    top: 7px;
+    left: 13px;
 }
 
 app-mensaje {
+    display: flex;
+    position: absolute;
     opacity: 1;
     transition: opacity 0.2s ease, transform 0.2s ease;
 }
@@ -41,4 +58,8 @@ app-mensaje.hidden {
     display: flex;
     justify-content: space-between;
     margin-top: 30px;
+}
+
+.boton-iniciar {
+    margin-bottom: 30px;
 }
