@@ -1,21 +1,35 @@
 import { Component, HostListener } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { TablaService } from '../tabla.service';
-import { SharedStringService } from '../shared-string.service';
-import { ComunicacionService } from '../comunicacion.service';
-import { ArbolService } from '../arbol.service';
-
+import { TablaService } from '../../services/table/tabla.service';
+import { SharedStringService } from '../../services/shared-string/shared-string.service';
+import { ComunicacionService } from '../../services/comunication/comunicacion.service';
+import { ArbolService } from '../../services/tree-generation/arbol.service';
 
 @Component({
   selector: 'app-tabla',
   templateUrl: './tabla.component.html',
-  styleUrls: ['./tabla.component.css']
+  styleUrls: ['./tabla.component.css'],
 })
 export class TablaComponent {
-
   data: any[][] = [];
   ruta = 'assets/datos.txt';
-  columns: string[] = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O'];
+  columns: string[] = [
+    'A',
+    'B',
+    'C',
+    'D',
+    'E',
+    'F',
+    'G',
+    'H',
+    'I',
+    'J',
+    'K',
+    'L',
+    'M',
+    'N',
+    'O',
+  ];
   rows: number[] = Array.from({ length: 15 }, (_, index) => index + 1);
   letras: string[][] = [];
   flag: boolean = false;
@@ -23,39 +37,48 @@ export class TablaComponent {
   columnaActual: number = -1;
   opcionesDisponibles = 0;
   numeroPasos: number = 0;
-  visited: boolean[][] = Array.from({ length: 15 }, (_) => Array.from({ length: 15 }, (_) => false));
+  visited: boolean[][] = Array.from({ length: 15 }, (_) =>
+    Array.from({ length: 15 }, (_) => false)
+  );
   prioridad: any = [];
   opciones: any = [];
   pila: any[] = [];
   recorrido: any[] = [];
-  
-  constructor(private http: HttpClient, private tablaService: TablaService, private stringService: SharedStringService,
-    private comunicacionService: ComunicacionService, private arbolService: ArbolService) { 
-      this.comunicacionService.botonClic$.subscribe(() => {
-        this.iniciarJuegoManual();
-      });
-      this.comunicacionService.botonClicIniciar$.subscribe(() => {
-        this.iniciarJuegoAutomático();
-      });
-    }
+
+  constructor(
+    private http: HttpClient,
+    private tablaService: TablaService,
+    private stringService: SharedStringService,
+    private comunicacionService: ComunicacionService,
+    private arbolService: ArbolService
+  ) {
+    this.comunicacionService.botonClic$.subscribe(() => {
+      this.iniciarJuegoManual();
+    });
+    this.comunicacionService.botonClicIniciar$.subscribe(() => {
+      this.iniciarJuegoAutomático();
+    });
+  }
 
   ngOnInit(): void {
-    this.letras = Array.from({ length: 15 }, (_) => Array.from({ length: 15 }, (_) => ''));
+    this.letras = Array.from({ length: 15 }, (_) =>
+      Array.from({ length: 15 }, (_) => '')
+    );
     this.loadData();
     this.suscribir();
   }
 
   loadData() {
-    this.http.get(this.ruta, { responseType: 'text' })
-      .subscribe(response => {
-        this.data = response.split('\n').map(row => row.split(',').map(Number));
-      });
+    this.http.get(this.ruta, { responseType: 'text' }).subscribe((response) => {
+      this.data = response.split('\n').map((row) => row.split(',').map(Number));
+    });
   }
 
   suscribir() {
-    this.tablaService.coordenadas$.subscribe(coordenadas => {
+    this.tablaService.coordenadas$.subscribe((coordenadas) => {
       const c: any[] = coordenadas.split(',');
-      const columna = c.length >= 2 ? c[1].charCodeAt(0) - 'A'.charCodeAt(0) : -1;
+      const columna =
+        c.length >= 2 ? c[1].charCodeAt(0) - 'A'.charCodeAt(0) : -1;
       const fila = Number(c[0]) - 1;
 
       switch (c[c.length - 1]) {
@@ -74,14 +97,12 @@ export class TablaComponent {
           break;
         case 'cuarto':
           let terreno: string = '';
-          if(this.data[fila][columna] === 0)
-            terreno = 'Wall';
-          else
-            terreno = 'Road';
-            this.stringService.setSharedStringTerreno(terreno);
-            setTimeout(() => {
-              this.stringService.setSharedStringTerreno('');
-            }, 3000);
+          if (this.data[fila][columna] === 0) terreno = 'Wall';
+          else terreno = 'Road';
+          this.stringService.setSharedStringTerreno(terreno);
+          setTimeout(() => {
+            this.stringService.setSharedStringTerreno('');
+          }, 3000);
           break;
         case 'quinto':
           const letrasRegex = /\[([^\]]*)\]/;
@@ -106,7 +127,6 @@ export class TablaComponent {
   }
 
   iniciarJuegoManual() {
-
     this.letras.forEach((row, i) => {
       row.forEach((cell, j) => {
         if (cell === 'I') {
@@ -123,8 +143,8 @@ export class TablaComponent {
 
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
-    if(this.flag){
-      switch(event.key) {
+    if (this.flag) {
+      switch (event.key) {
         case 'ArrowUp':
           this.moverArriba();
           break;
@@ -142,85 +162,103 @@ export class TablaComponent {
   }
 
   moverArriba() {
-    if (this.filaActual > 0 && this.data[this.filaActual - 1][this.columnaActual] !== 0
-      && !this.letras[this.filaActual-1][this.columnaActual].includes('V')) {
-
+    if (
+      this.filaActual > 0 &&
+      this.data[this.filaActual - 1][this.columnaActual] !== 0 &&
+      !this.letras[this.filaActual - 1][this.columnaActual].includes('V')
+    ) {
       this.numeroPasos++;
-      
+
       this.coprobarOpcionesDisponibles();
 
       let cellValue = this.letras[this.filaActual][this.columnaActual];
       cellValue = cellValue.replace(/,?X,?/g, '');
       let nuevaLetra = cellValue;
-      if(!cellValue.includes('V'))
-        nuevaLetra = cellValue === 'V' || cellValue === '' ? 'V' : cellValue + ',V';
+      if (!cellValue.includes('V'))
+        nuevaLetra =
+          cellValue === 'V' || cellValue === '' ? 'V' : cellValue + ',V';
 
       if (this.opcionesDisponibles > 1) {
         const coordenadas = { x: this.filaActual, y: this.columnaActual };
-        if(!this.pila.some(item => item.x === coordenadas.x && item.y === coordenadas.y)){
+        if (
+          !this.pila.some(
+            (item) => item.x === coordenadas.x && item.y === coordenadas.y
+          )
+        ) {
           this.pila.push(coordenadas);
         }
-        if(!cellValue.includes('O'))
-          nuevaLetra += ',O';
+        if (!cellValue.includes('O')) nuevaLetra += ',O';
       }
-      
+
       this.letras[this.filaActual][this.columnaActual] = nuevaLetra;
       this.filaActual--;
-      if(this.letras[this.filaActual][this.columnaActual] == 'F'){
+      if (this.letras[this.filaActual][this.columnaActual] == 'F') {
         this.flag = false;
         this.letras[this.filaActual][this.columnaActual] += ',X';
-        this.stringService.setSharedStringManual('Número de pasos: ' + this.numeroPasos);
-        this.stringService.setSharedStringAgente('Número de pasos: ' + this.numeroPasos);
-      }
-      else
-        this.letras[this.filaActual][this.columnaActual] = 'X';
+        this.stringService.setSharedStringManual(
+          'Número de pasos: ' + this.numeroPasos
+        );
+        this.stringService.setSharedStringAgente(
+          'Número de pasos: ' + this.numeroPasos
+        );
+      } else this.letras[this.filaActual][this.columnaActual] = 'X';
       this.actualizarVista();
       this.agregarRecorrido();
     }
   }
 
   moverAbajo() {
-    if (this.filaActual < this.data.length - 1 && this.data[this.filaActual + 1][this.columnaActual] !== 0
-      && !this.letras[this.filaActual+1][this.columnaActual].includes('V')) {
-
+    if (
+      this.filaActual < this.data.length - 1 &&
+      this.data[this.filaActual + 1][this.columnaActual] !== 0 &&
+      !this.letras[this.filaActual + 1][this.columnaActual].includes('V')
+    ) {
       this.numeroPasos++;
-            
+
       this.coprobarOpcionesDisponibles();
 
       let cellValue = this.letras[this.filaActual][this.columnaActual];
       cellValue = cellValue.replace(/,?X,?/g, '');
       let nuevaLetra = cellValue;
-      if(!cellValue.includes('V'))
-        nuevaLetra = cellValue === 'V' || cellValue === '' ? 'V' : cellValue + ',V';
+      if (!cellValue.includes('V'))
+        nuevaLetra =
+          cellValue === 'V' || cellValue === '' ? 'V' : cellValue + ',V';
 
       if (this.opcionesDisponibles > 1) {
         const coordenadas = { x: this.filaActual, y: this.columnaActual };
-        if(!this.pila.some(item => item.x === coordenadas.x && item.y === coordenadas.y)){
+        if (
+          !this.pila.some(
+            (item) => item.x === coordenadas.x && item.y === coordenadas.y
+          )
+        ) {
           this.pila.push(coordenadas);
         }
-        if(!cellValue.includes('O'))
-          nuevaLetra += ',O';
+        if (!cellValue.includes('O')) nuevaLetra += ',O';
       }
-      
+
       this.letras[this.filaActual][this.columnaActual] = nuevaLetra;
       this.filaActual++;
-      if(this.letras[this.filaActual][this.columnaActual] == 'F'){
+      if (this.letras[this.filaActual][this.columnaActual] == 'F') {
         this.flag = false;
         this.letras[this.filaActual][this.columnaActual] += ',X';
-        this.stringService.setSharedStringManual('Número de pasos: ' + this.numeroPasos);
-        this.stringService.setSharedStringAgente('Número de pasos: ' + this.numeroPasos);
-      }
-      else
-        this.letras[this.filaActual][this.columnaActual] = 'X';
+        this.stringService.setSharedStringManual(
+          'Número de pasos: ' + this.numeroPasos
+        );
+        this.stringService.setSharedStringAgente(
+          'Número de pasos: ' + this.numeroPasos
+        );
+      } else this.letras[this.filaActual][this.columnaActual] = 'X';
       this.actualizarVista();
       this.agregarRecorrido();
     }
   }
 
   moverIzquierda() {
-    if (this.columnaActual > 0 && this.data[this.filaActual][this.columnaActual - 1] !== 0
-      && !this.letras[this.filaActual][this.columnaActual-1].includes('V')) {
-
+    if (
+      this.columnaActual > 0 &&
+      this.data[this.filaActual][this.columnaActual - 1] !== 0 &&
+      !this.letras[this.filaActual][this.columnaActual - 1].includes('V')
+    ) {
       this.numeroPasos++;
 
       this.coprobarOpcionesDisponibles();
@@ -228,66 +266,80 @@ export class TablaComponent {
       let cellValue = this.letras[this.filaActual][this.columnaActual];
       cellValue = cellValue.replace(/,?X,?/g, '');
       let nuevaLetra = cellValue;
-      if(!cellValue.includes('V'))
-        nuevaLetra = cellValue === 'V' || cellValue === '' ? 'V' : cellValue + ',V';
+      if (!cellValue.includes('V'))
+        nuevaLetra =
+          cellValue === 'V' || cellValue === '' ? 'V' : cellValue + ',V';
 
       if (this.opcionesDisponibles > 1) {
         const coordenadas = { x: this.filaActual, y: this.columnaActual };
-        if(!this.pila.some(item => item.x === coordenadas.x && item.y === coordenadas.y)){
+        if (
+          !this.pila.some(
+            (item) => item.x === coordenadas.x && item.y === coordenadas.y
+          )
+        ) {
           this.pila.push(coordenadas);
         }
-        if(!cellValue.includes('O'))
-          nuevaLetra += ',O';
+        if (!cellValue.includes('O')) nuevaLetra += ',O';
       }
-      
+
       this.letras[this.filaActual][this.columnaActual] = nuevaLetra;
       this.columnaActual--;
-      if(this.letras[this.filaActual][this.columnaActual] == 'F'){
+      if (this.letras[this.filaActual][this.columnaActual] == 'F') {
         this.flag = false;
         this.letras[this.filaActual][this.columnaActual] += ',X';
-        this.stringService.setSharedStringManual('Número de pasos: ' + this.numeroPasos);
-        this.stringService.setSharedStringAgente('Número de pasos: ' + this.numeroPasos);
-      }
-      else
-        this.letras[this.filaActual][this.columnaActual] = 'X';
+        this.stringService.setSharedStringManual(
+          'Número de pasos: ' + this.numeroPasos
+        );
+        this.stringService.setSharedStringAgente(
+          'Número de pasos: ' + this.numeroPasos
+        );
+      } else this.letras[this.filaActual][this.columnaActual] = 'X';
       this.actualizarVista();
       this.agregarRecorrido();
     }
   }
 
   moverDerecha() {
-    if (this.columnaActual < this.data[0].length - 1 && this.data[this.filaActual][this.columnaActual + 1] !== 0
-      && !this.letras[this.filaActual][this.columnaActual+1].includes('V')) {
-
+    if (
+      this.columnaActual < this.data[0].length - 1 &&
+      this.data[this.filaActual][this.columnaActual + 1] !== 0 &&
+      !this.letras[this.filaActual][this.columnaActual + 1].includes('V')
+    ) {
       this.numeroPasos++;
-      
+
       this.coprobarOpcionesDisponibles();
 
       let cellValue = this.letras[this.filaActual][this.columnaActual];
       cellValue = cellValue.replace(/,?X,?/g, '');
       let nuevaLetra = cellValue;
-      if(!cellValue.includes('V'))
-        nuevaLetra = cellValue === 'V' || cellValue === '' ? 'V' : cellValue + ',V';
+      if (!cellValue.includes('V'))
+        nuevaLetra =
+          cellValue === 'V' || cellValue === '' ? 'V' : cellValue + ',V';
 
       if (this.opcionesDisponibles > 1) {
         const coordenadas = { x: this.filaActual, y: this.columnaActual };
-        if(!this.pila.some(item => item.x === coordenadas.x && item.y === coordenadas.y)){
+        if (
+          !this.pila.some(
+            (item) => item.x === coordenadas.x && item.y === coordenadas.y
+          )
+        ) {
           this.pila.push(coordenadas);
         }
-        if(!cellValue.includes('O'))
-          nuevaLetra += ',O';
+        if (!cellValue.includes('O')) nuevaLetra += ',O';
       }
-      
+
       this.letras[this.filaActual][this.columnaActual] = nuevaLetra;
       this.columnaActual++;
-      if(this.letras[this.filaActual][this.columnaActual] == 'F'){
+      if (this.letras[this.filaActual][this.columnaActual] == 'F') {
         this.flag = false;
         this.letras[this.filaActual][this.columnaActual] += ',X';
-        this.stringService.setSharedStringManual('Número de pasos: ' + this.numeroPasos);
-        this.stringService.setSharedStringAgente('Número de pasos: ' + this.numeroPasos);
-      }
-      else
-        this.letras[this.filaActual][this.columnaActual] = 'X';
+        this.stringService.setSharedStringManual(
+          'Número de pasos: ' + this.numeroPasos
+        );
+        this.stringService.setSharedStringAgente(
+          'Número de pasos: ' + this.numeroPasos
+        );
+      } else this.letras[this.filaActual][this.columnaActual] = 'X';
       this.actualizarVista();
       this.agregarRecorrido();
     }
@@ -297,26 +349,38 @@ export class TablaComponent {
     this.opcionesDisponibles = 0;
     this.opciones = [];
 
-    if (this.filaActual > 0 && this.data[this.filaActual - 1][this.columnaActual] !== 0 ){
-      if(!this.letras[this.filaActual - 1][this.columnaActual].includes('V')) {
+    if (
+      this.filaActual > 0 &&
+      this.data[this.filaActual - 1][this.columnaActual] !== 0
+    ) {
+      if (!this.letras[this.filaActual - 1][this.columnaActual].includes('V')) {
         this.opcionesDisponibles++;
         this.opciones.push('A');
       }
     }
-    if (this.filaActual < this.data.length - 1 && this.data[this.filaActual + 1][this.columnaActual] !== 0){
-      if(!this.letras[this.filaActual + 1][this.columnaActual].includes('V')) {
+    if (
+      this.filaActual < this.data.length - 1 &&
+      this.data[this.filaActual + 1][this.columnaActual] !== 0
+    ) {
+      if (!this.letras[this.filaActual + 1][this.columnaActual].includes('V')) {
         this.opcionesDisponibles++;
         this.opciones.push('B');
       }
     }
-    if (this.columnaActual > 0 && this.data[this.filaActual][this.columnaActual - 1] !== 0){
-      if(!this.letras[this.filaActual][this.columnaActual - 1].includes('V')) {
+    if (
+      this.columnaActual > 0 &&
+      this.data[this.filaActual][this.columnaActual - 1] !== 0
+    ) {
+      if (!this.letras[this.filaActual][this.columnaActual - 1].includes('V')) {
         this.opcionesDisponibles++;
         this.opciones.push('I');
       }
     }
-    if (this.columnaActual < this.data[0].length - 1 && this.data[this.filaActual][this.columnaActual + 1] !== 0){
-      if(!this.letras[this.filaActual][this.columnaActual + 1].includes('V')) {
+    if (
+      this.columnaActual < this.data[0].length - 1 &&
+      this.data[this.filaActual][this.columnaActual + 1] !== 0
+    ) {
+      if (!this.letras[this.filaActual][this.columnaActual + 1].includes('V')) {
         this.opcionesDisponibles++;
         this.opciones.push('D');
       }
@@ -326,16 +390,16 @@ export class TablaComponent {
   actualizarVista() {
     this.visited[this.filaActual][this.columnaActual] = true;
 
-    if(this.filaActual > 0)
+    if (this.filaActual > 0)
       this.visited[this.filaActual - 1][this.columnaActual] = true;
 
-    if(this.filaActual < 14)
+    if (this.filaActual < 14)
       this.visited[this.filaActual + 1][this.columnaActual] = true;
 
-    if(this.columnaActual > 0)
+    if (this.columnaActual > 0)
       this.visited[this.filaActual][this.columnaActual - 1] = true;
 
-    if(this.columnaActual < 14)
+    if (this.columnaActual < 14)
       this.visited[this.filaActual][this.columnaActual + 1] = true;
   }
 
@@ -362,44 +426,47 @@ export class TablaComponent {
   }
 
   async avanzar() {
-    while(this.flag){
+    while (this.flag) {
       this.coprobarOpcionesDisponibles();
-      if(this.opcionesDisponibles==0){
-
+      if (this.opcionesDisponibles == 0) {
         let cellValue = this.letras[this.filaActual][this.columnaActual];
         cellValue = cellValue.replace(/,?X,?/g, '');
-        if(!cellValue.includes('V')){
-          let nuevaLetra = cellValue === 'V' || cellValue === '' ? 'V' : cellValue + ',V';
+        if (!cellValue.includes('V')) {
+          let nuevaLetra =
+            cellValue === 'V' || cellValue === '' ? 'V' : cellValue + ',V';
           this.letras[this.filaActual][this.columnaActual] = nuevaLetra;
         }
 
-        this.filaActual = this.pila[this.pila.length-1].x;
-        this.columnaActual = this.pila[this.pila.length-1].y;
+        this.filaActual = this.pila[this.pila.length - 1].x;
+        this.columnaActual = this.pila[this.pila.length - 1].y;
         this.letras[this.filaActual][this.columnaActual] += ',X';
 
         this.coprobarOpcionesDisponibles();
-        if(this.opcionesDisponibles == 0){
+        if (this.opcionesDisponibles == 0) {
           let cellValue = this.letras[this.filaActual][this.columnaActual];
-          this.letras[this.filaActual][this.columnaActual] = cellValue.replace(/,?X,?/g, '');
+          this.letras[this.filaActual][this.columnaActual] = cellValue.replace(
+            /,?X,?/g,
+            ''
+          );
 
           this.pila.pop();
         }
         this.agregarRecorrido();
         this.avanzar();
       } else {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        for(let i = 0; i < this.prioridad.length; i++){
-          if(this.opciones.includes(this.prioridad[i])){
-            if(this.prioridad[i] === 'A'){
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        for (let i = 0; i < this.prioridad.length; i++) {
+          if (this.opciones.includes(this.prioridad[i])) {
+            if (this.prioridad[i] === 'A') {
               this.moverArriba();
               break;
-            } else if(this.prioridad[i] === 'B'){
+            } else if (this.prioridad[i] === 'B') {
               this.moverAbajo();
               break;
-            } else if(this.prioridad[i] === 'I'){
+            } else if (this.prioridad[i] === 'I') {
               this.moverIzquierda();
               break;
-            } else if(this.prioridad[i] === 'D'){
+            } else if (this.prioridad[i] === 'D') {
               this.moverDerecha();
               break;
             }
@@ -415,11 +482,15 @@ export class TablaComponent {
     let cellValue = this.letras[this.filaActual][this.columnaActual];
     let coordenadas;
     this.coprobarOpcionesDisponibles();
-    if(this.opcionesDisponibles > 1 || this.opcionesDisponibles == 0 || cellValue.includes('O')
-      || cellValue.includes('I') || cellValue.includes('F'))
+    if (
+      this.opcionesDisponibles > 1 ||
+      this.opcionesDisponibles == 0 ||
+      cellValue.includes('O') ||
+      cellValue.includes('I') ||
+      cellValue.includes('F')
+    )
       coordenadas = { x: fila, y: columna, z: 1 };
-    else
-      coordenadas = { x: fila, y: columna, z: 0 };
+    else coordenadas = { x: fila, y: columna, z: 0 };
     this.recorrido.push(coordenadas);
     this.arbolService.setCoordinatesArray(this.recorrido);
   }
