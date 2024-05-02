@@ -63,3 +63,7 @@ app-mensaje.hidden {
 .boton-iniciar {
   margin-bottom: 30px;
 }
+
+.arbol {
+  width: 100%;
+}

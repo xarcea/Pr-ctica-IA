@@ -1,17 +1,26 @@
-<div>
-    <h2>Árbol de coordenadas</h2>
-    <ul>
-        <ng-container *ngFor="let node of tree">
-        <li>
-            {{ node.coordenada.x }}, {{ node.coordenada.y }}
-            ({{ node.marcado ? 'Especial' : 'Normal' }})
-            <ul *ngIf="node.hijo && node.hijo.length > 0">
-            <ng-container *ngFor="let child of node.hijo">
-                <app-tree-node [node]="child"></app-tree-node>
-            </ng-container>
-            </ul>
-        </li>
-        </ng-container>
-    </ul>
+<div class="arbol">
+    <ngx-graph #myGraph
+        [view]="[600, 400]"
+        [nodes]="nodes"
+        [links]="links"
+        [panOnZoom]="true"
+        [autoZoom]="true"
+        [enableZoom]="true"
+        [draggingEnabled]="true"
+        [layoutSettings]="layoutSettings"
+        [view]="[width, 400]"
+    >
+        <ng-template #nodeTemplate let-node>
+            <svg:g>
+                <svg:circle
+                    [attr.r]="30"
+                    [attr.fill]="node.data.color"
+                    [attr.transform]="'translate(40, 35)'"
+                ></svg:circle>
+                <svg:text alignment-baseline="middle" text-anchor="middle" [attr.transform]="'translate(-20, 30)'" [style.font-family]="'segoe ui'">
+                    {{ node.label }}
+                </svg:text>
+            </svg:g>
+        </ng-template>
+    </ngx-graph>
 </div>
-<!-- <app-tree-visualization [treeData]="tree"></app-tree-visualization> -->

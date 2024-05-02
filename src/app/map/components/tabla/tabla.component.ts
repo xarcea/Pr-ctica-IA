@@ -482,6 +482,7 @@ export class TablaComponent {
     let cellValue = this.letras[this.filaActual][this.columnaActual];
     let coordenadas;
     this.coprobarOpcionesDisponibles();
+    const stringOpciones: string = JSON.stringify(this.opciones);
     if (
       this.opcionesDisponibles > 1 ||
       this.opcionesDisponibles == 0 ||
@@ -489,8 +490,8 @@ export class TablaComponent {
       cellValue.includes('I') ||
       cellValue.includes('F')
     )
-      coordenadas = { x: fila, y: columna, z: 1 };
-    else coordenadas = { x: fila, y: columna, z: 0 };
+      coordenadas = { x: fila, y: columna, z: 1 , opciones: stringOpciones};
+    else coordenadas = { x: fila, y: columna, z: 0 , opciones: stringOpciones};
     this.recorrido.push(coordenadas);
     this.arbolService.setCoordinatesArray(this.recorrido);
   }

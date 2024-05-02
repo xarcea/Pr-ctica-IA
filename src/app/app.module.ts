@@ -4,8 +4,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppComponent } from './app.component';
 import { MaterialModule } from './material.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-
 import { MapModule } from './map/map.module';
+
 
 @NgModule({
   declarations: [AppComponent],
@@ -14,7 +14,7 @@ import { MapModule } from './map/map.module';
     HttpClientModule,
     MaterialModule,
     BrowserAnimationsModule,
-    MapModule,
+    MapModule
   ],
   providers: [],
   bootstrap: [AppComponent],

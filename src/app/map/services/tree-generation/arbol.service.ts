@@ -13,8 +13,4 @@ export class ArbolService {
   setCoordinatesArray(coordenadas: any[]) {
     this.treeArraySubject.next(coordenadas);
   }
-
-  getCoordinatesArray(): any[] {
-    return this.treeArraySubject.getValue();
-  }
 }
