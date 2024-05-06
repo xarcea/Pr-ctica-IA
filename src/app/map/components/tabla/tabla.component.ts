@@ -164,6 +164,7 @@ export class TablaComponent {
 
   moverArriba() {
     if (
+      this.flag &&
       this.filaActual > 0 &&
       this.data[this.filaActual - 1][this.columnaActual] !== 0 &&
       !this.letras[this.filaActual - 1][this.columnaActual].includes('V')
@@ -210,6 +211,7 @@ export class TablaComponent {
 
   moverAbajo() {
     if (
+      this.flag &&
       this.filaActual < this.data.length - 1 &&
       this.data[this.filaActual + 1][this.columnaActual] !== 0 &&
       !this.letras[this.filaActual + 1][this.columnaActual].includes('V')
@@ -256,6 +258,7 @@ export class TablaComponent {
 
   moverIzquierda() {
     if (
+      this.flag &&
       this.columnaActual > 0 &&
       this.data[this.filaActual][this.columnaActual - 1] !== 0 &&
       !this.letras[this.filaActual][this.columnaActual - 1].includes('V')
@@ -302,6 +305,7 @@ export class TablaComponent {
 
   moverDerecha() {
     if (
+      this.flag &&
       this.columnaActual < this.data[0].length - 1 &&
       this.data[this.filaActual][this.columnaActual + 1] !== 0 &&
       !this.letras[this.filaActual][this.columnaActual + 1].includes('V')
@@ -484,7 +488,8 @@ export class TablaComponent {
     let cZ;
     let ultimoLado;
     this.coprobarOpcionesDisponibles();
-    const stringOpciones: string = JSON.stringify(this.opciones);
+    let stringOpciones: string = JSON.stringify(this.opciones);
+    stringOpciones = this.formatearString(stringOpciones);
     if(cellValue.includes('I')){
       cZ = 1;
       ultimoLado = this.lado;
@@ -529,5 +534,14 @@ export class TablaComponent {
         }
       }
     }
+  }
+
+  formatearString(stringOpciones: string): string {
+    if(stringOpciones == '[]') return '[∅]';
+    let nuevoString: string;
+    nuevoString = stringOpciones.replace(/\"/g, '');
+    let letrasOrdenadas = this.prioridad.filter((letra: string) => nuevoString.includes(letra));
+    nuevoString = '[' + letrasOrdenadas.join(',') + ']';
+    return nuevoString;
   }
 }

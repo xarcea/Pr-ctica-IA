@@ -45,4 +45,8 @@ export class MainPageComponent {
   cambiarVisibilidad() {
     this.mostrarArbol = !this.mostrarArbol;
   }
+
+  recargar() {
+    window.location.reload();
+  }
 }
