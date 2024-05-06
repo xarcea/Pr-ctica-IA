@@ -44,8 +44,12 @@
       ></app-mensaje>
     </div>
   </div>
-</div>
-<div class="arbol" >
-  <!-- *ngIf="mostrarArbol" -->
-  <app-tree></app-tree>
+  <div class="boton-arbol">
+      <button mat-fab (click)="cambiarVisibilidad()">
+        <mat-icon>device_hub</mat-icon>
+      </button>
+  </div>
+  <div class="arbol" [hidden]="mostrarArbol">
+    <app-tree></app-tree>
+  </div>
 </div>

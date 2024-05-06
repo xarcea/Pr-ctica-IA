@@ -19,7 +19,7 @@ span {
     margin: 0;
     /* position: absolute; */
     transform: translateY(-6%);
-    z-index: 100;
+    z-index: 30;
     padding: 20px;
 
     opacity: 1;

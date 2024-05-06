@@ -44,6 +44,7 @@ export class TablaComponent {
   opciones: any = [];
   pila: any[] = [];
   recorrido: any[] = [];
+  lado = '';
 
   constructor(
     private http: HttpClient,
@@ -448,7 +449,6 @@ export class TablaComponent {
             /,?X,?/g,
             ''
           );
-
           this.pila.pop();
         }
         this.agregarRecorrido();
@@ -481,18 +481,53 @@ export class TablaComponent {
     const fila = this.filaActual + 1;
     let cellValue = this.letras[this.filaActual][this.columnaActual];
     let coordenadas;
+    let cZ;
+    let ultimoLado;
     this.coprobarOpcionesDisponibles();
     const stringOpciones: string = JSON.stringify(this.opciones);
-    if (
-      this.opcionesDisponibles > 1 ||
-      this.opcionesDisponibles == 0 ||
-      cellValue.includes('O') ||
-      cellValue.includes('I') ||
-      cellValue.includes('F')
-    )
-      coordenadas = { x: fila, y: columna, z: 1 , opciones: stringOpciones};
-    else coordenadas = { x: fila, y: columna, z: 0 , opciones: stringOpciones};
+    if(cellValue.includes('I')){
+      cZ = 1;
+      ultimoLado = this.lado;
+      this.determinarLado();
+    } else if(cellValue.includes('F')){
+      cZ = 4;
+      ultimoLado = this.lado;
+    } else if (this.opcionesDisponibles > 1 || cellValue.includes('O')){
+      if(cellValue.includes('O') && this.opcionesDisponibles == 0){
+        cZ = 5;
+      } else{
+        ultimoLado = this.lado;
+        this.determinarLado();
+        cZ = 2;
+      }
+    } else if(this.opcionesDisponibles == 0 && !cellValue.includes('O')){
+      ultimoLado = this.lado;
+      cZ = 3;
+    }  else{
+      cZ = 0;
+    }
+    coordenadas = { x: fila, y: columna, z: cZ , opciones: stringOpciones, lado: ultimoLado};
     this.recorrido.push(coordenadas);
     this.arbolService.setCoordinatesArray(this.recorrido);
+  }
+
+  determinarLado(){
+    for (let i = 0; i < this.prioridad.length; i++) {
+      if (this.opciones.includes(this.prioridad[i])) {
+        if (this.prioridad[i] === 'A') {
+          this.lado = 'A';
+          break;
+        } else if (this.prioridad[i] === 'B') {
+          this.lado = 'B';
+          break;
+        } else if (this.prioridad[i] === 'I') {
+          this.lado = 'I';
+          break;
+        } else if (this.prioridad[i] === 'D') {
+          this.lado = 'D';
+          break;
+        }
+      }
+    }
   }
 }

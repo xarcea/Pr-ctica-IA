@@ -8,6 +8,7 @@ import { TreeComponent } from './components/tree/tree.component';
 import { BotonComponent } from './components/boton/boton.component';
 import { TablaComponent } from './components/tabla/tabla.component';
 import { NgxGraphModule } from '@swimlane/ngx-graph';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { NgxGraphModule } from '@swimlane/ngx-graph';
   imports: [
     CommonModule, 
     MaterialModule,
-    NgxGraphModule
+    NgxGraphModule,
+    MatIconModule
   ],
   exports: [MainPageComponent],
 })

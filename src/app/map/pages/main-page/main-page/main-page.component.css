@@ -3,6 +3,7 @@
   justify-content: center;
   font-family: "Segoe UI";
   padding-top: 30px;
+  width: 100%;
 }
 
 app-tabla {
@@ -65,5 +66,25 @@ app-mensaje.hidden {
 }
 
 .arbol {
-  width: 100%;
+  position: fixed;
+  z-index: 50;
+  right: -2%;
+  top: -5%;
+  
+  transform: translateX(-5%);
+  opacity: 1;
+  transition: opacity 1s ease, transform 1s ease;
+}
+
+.arbol.hidden {
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: opacity 1s ease, transform 1s ease;
+}
+
+.boton-arbol {
+  display: flex;
+  position: absolute;
+  z-index: 100;
+  right: 2%;
 }

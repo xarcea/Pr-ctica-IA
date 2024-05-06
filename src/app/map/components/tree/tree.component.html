@@ -1,24 +1,26 @@
 <div class="arbol">
     <ngx-graph #myGraph
-        [view]="[600, 400]"
         [nodes]="nodes"
         [links]="links"
         [panOnZoom]="true"
         [autoZoom]="true"
         [enableZoom]="true"
-        [draggingEnabled]="true"
+        [draggingEnabled]="false"
         [layoutSettings]="layoutSettings"
-        [view]="[width, 400]"
+        [view]="[width, height]"
     >
         <ng-template #nodeTemplate let-node>
             <svg:g>
                 <svg:circle
-                    [attr.r]="30"
+                    [attr.r]="40"
                     [attr.fill]="node.data.color"
-                    [attr.transform]="'translate(40, 35)'"
+                    [attr.transform]="'translate(40, 65)'"
                 ></svg:circle>
-                <svg:text alignment-baseline="middle" text-anchor="middle" [attr.transform]="'translate(-20, 30)'" [style.font-family]="'segoe ui'">
-                    {{ node.label }}
+                <svg:text style="white-space: pre-line;" [style.font-family]="'segoe ui'" [attr.transform]="'translate(40, -30)'">
+                    <tspan>{{ node.lado }}</tspan>
+                </svg:text>
+                <svg:text style="white-space: pre-line;" [style.font-family]="'segoe ui'" alignment-baseline="middle">
+                    <tspan>{{ node.labelText }}</tspan>
                 </svg:text>
             </svg:g>
         </ng-template>

@@ -12,14 +12,13 @@ import { ArbolService } from 'src/app/map/services/tree-generation/arbol.service
 export class MainPageComponent {
   title = 'laberinto';
   mostrar = false;
-  mostrarArbol = false;
+  mostrarArbol = true;
   mensajeManual = '';
   mensajeAgente = '';
   mensajeTerreno = '';
   sharedStringSubscriptionManual: Subscription;
   sharedStringSubscriptionAgente: Subscription;
   sharedStringSubscriptionTerreno: Subscription;
-  dataSubscription: Subscription;
 
   constructor( private sharedStringService: SharedStringService, 
     private comunicacionService: ComunicacionService, private arbolService: ArbolService ) {
@@ -41,13 +40,9 @@ export class MainPageComponent {
     this.comunicacionService.botonClicAgente$.subscribe(() => {
       this.mostrar = true;
     });
-    
-    this.dataSubscription = this.arbolService.treeArray$.subscribe(
-      (recorrido) => {
-        if(recorrido.length > 0){
-          this.mostrarArbol = true;
-        }
-      }
-    );
+  }
+
+  cambiarVisibilidad() {
+    this.mostrarArbol = !this.mostrarArbol;
   }
 }
